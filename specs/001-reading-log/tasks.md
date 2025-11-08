@@ -27,15 +27,15 @@ Based on plan.md project structure:
 
 **Purpose**: Project initialization and basic Angular structure
 
-- [ ] T001 Create Angular 17+ workspace with standalone components using `ng new ncn-books --standalone --routing --style=scss`
-- [ ] T002 Install core dependencies: Dexie.js 3.x, dexie-angular 1.x, Angular Material 17+, Tailwind CSS 3.x, Chart.js 4.x, ng2-charts
-- [ ] T003 [P] Configure Tailwind CSS: create `tailwind.config.js`, update `src/styles.scss` with Tailwind imports
-- [ ] T004 [P] Configure Angular Material: run `ng add @angular/material`, select Indigo/Pink theme, enable typography and animations
-- [ ] T005 [P] Create directory structure per plan.md: `src/app/core/`, `src/app/features/`, `src/app/shared/`
-- [ ] T006 [P] Configure environment files: `src/environments/environment.ts` and `src/environments/environment.prod.ts` with Google Books API base URL
-- [ ] T007 [P] Setup GitHub Actions workflow: create `.github/workflows/deploy.yml` for GitHub Pages deployment
-- [ ] T008 [P] Configure `angular.json` for production build with base-href `/ncn-books/` for GitHub Pages
-- [ ] T009 Initialize Git repository and create initial commit with project scaffold
+- [X] T001 Create Angular 17+ workspace with standalone components using `ng new ncn-books --standalone --routing --style=scss`
+- [X] T002 Install core dependencies: Dexie.js 3.x, dexie-angular 1.x, Angular Material 17+, Tailwind CSS 3.x, Chart.js 4.x, ng2-charts
+- [X] T003 [P] Configure Tailwind CSS: create `tailwind.config.js`, update `src/styles.scss` with Tailwind imports
+- [X] T004 [P] Configure Angular Material: run `ng add @angular/material`, select Indigo/Pink theme, enable typography and animations
+- [X] T005 [P] Create directory structure per plan.md: `src/app/core/`, `src/app/features/`, `src/app/shared/`
+- [X] T006 [P] Configure environment files: `src/environments/environment.ts` and `src/environments/environment.prod.ts` with Google Books API base URL
+- [X] T007 [P] Setup GitHub Actions workflow: create `.github/workflows/deploy.yml` for GitHub Pages deployment
+- [X] T008 [P] Configure `angular.json` for production build with base-href `/ncn-books/` for GitHub Pages
+- [X] T009 Initialize Git repository and create initial commit with project scaffold
 
 ---
 
@@ -45,17 +45,17 @@ Based on plan.md project structure:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T010 [P] Create Book model interface in `src/app/core/models/book.model.ts` with all fields per data-model.md
-- [ ] T011 [P] Create ReadingEntry model interface in `src/app/core/models/reading-entry.model.ts` with status enum
-- [ ] T012 [P] Create Note model interface in `src/app/core/models/note.model.ts`
-- [ ] T013 [P] Create UserPreference model interface in `src/app/core/models/user-preference.model.ts`
-- [ ] T014 Initialize Dexie.js database in `src/app/core/services/db.service.ts` with schema version 1 per data-model.md
-- [ ] T015 Create StorageService in `src/app/core/services/storage.service.ts` with CRUD operations for Book, ReadingEntry, Note tables using Dexie.js transactions
-- [ ] T016 [P] Create shared LoadingSpinnerComponent in `src/app/shared/components/loading-spinner.component.ts` using mat-progress-spinner
-- [ ] T017 [P] Create shared ErrorMessageComponent in `src/app/shared/components/error-message.component.ts` for displaying error states
-- [ ] T018 [P] Create shared ConfirmationDialogComponent in `src/app/shared/components/confirmation-dialog.component.ts` using mat-dialog
-- [ ] T019 Configure routing in `src/app/app.routes.ts` with lazy-loaded feature routes for library, search, detail, statistics, settings
-- [ ] T020 Create root AppComponent in `src/app/app.component.ts` with navigation toolbar using mat-toolbar and router-outlet
+- [X] T010 [P] Create Book model interface in `src/app/core/models/book.model.ts` with all fields per data-model.md
+- [X] T011 [P] Create ReadingEntry model interface in `src/app/core/models/reading-entry.model.ts` with status enum
+- [X] T012 [P] Create Note model interface in `src/app/core/models/note.model.ts`
+- [X] T013 [P] Create UserPreference model interface in `src/app/core/models/user-preference.model.ts`
+- [X] T014 Initialize Dexie.js database in `src/app/core/services/db.service.ts` with schema version 1 per data-model.md
+- [X] T015 Create StorageService in `src/app/core/services/storage.service.ts` with CRUD operations for Book, ReadingEntry, Note tables using Dexie.js transactions
+- [X] T016 [P] Create shared LoadingSpinnerComponent in `src/app/shared/components/loading-spinner.component.ts` using mat-progress-spinner
+- [X] T017 [P] Create shared ErrorMessageComponent in `src/app/shared/components/error-message.component.ts` for displaying error states
+- [X] T018 [P] Create shared ConfirmationDialogComponent in `src/app/shared/components/confirmation-dialog.component.ts` using mat-dialog
+- [X] T019 Configure routing in `src/app/app.routes.ts` with lazy-loaded feature routes for library, search, detail, statistics, settings
+- [X] T020 Create root AppComponent in `src/app/app.component.ts` with navigation toolbar using mat-toolbar and router-outlet
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
