@@ -1,1 +1,80 @@
-<p>search works!</p>
+<div class="container mx-auto p-4 max-w-6xl">
+  <h1 class="text-3xl font-bold mb-6">Search Books</h1>
+
+  <!-- Search Form -->
+  <form [formGroup]="searchForm" class="mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <mat-form-field class="md:col-span-2" appearance="outline">
+        <mat-label>Book Title</mat-label>
+        <input matInput formControlName="title" placeholder="Enter book title" autofocus>
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Author (optional)</mat-label>
+        <input matInput formControlName="author" placeholder="Enter author name">
+        <mat-icon matSuffix>person</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <div class="flex gap-2 mb-4">
+      <button mat-raised-button color="primary" (click)="performSearch()" [disabled]="isLoading || !searchForm.get('title')?.value">
+        Search
+      </button>
+      <button mat-button (click)="clearSearch()" [disabled]="isLoading">
+        Clear
+      </button>
+    </div>
+  </form>
+
+  <!-- Loading Spinner -->
+  <app-loading-spinner *ngIf="isLoading && books.length === 0"></app-loading-spinner>
+
+  <!-- Search Results -->
+  <div *ngIf="!isLoading && hasSearched">
+    <!-- No Results -->
+    <div *ngIf="books.length === 0" class="text-center py-8">
+      <mat-icon class="text-6xl text-gray-400 mb-4">search_off</mat-icon>
+      <h2 class="text-xl font-semibold mb-2">No books found</h2>
+      <p class="text-gray-600 mb-4">Try adjusting your search terms</p>
+      <button mat-raised-button color="primary">
+        <mat-icon>add</mat-icon>
+        Add Book Manually
+      </button>
+    </div>
+
+    <!-- Results Grid -->
+    <div *ngIf="books.length > 0">
+      <p class="text-gray-600 mb-4">Found {{books.length}} result{{books.length !== 1 ? 's' : ''}}</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div *ngFor="let book of books" class="border rounded-lg p-4 hover:shadow-lg transition-shadow">
+          <img
+            [src]="book.coverImageUrl || 'assets/placeholder-book.png'"
+            [alt]="book.title"
+            class="w-full h-48 object-cover rounded mb-3"
+            loading="lazy"
+          >
+          <h3 class="font-semibold text-lg mb-1 line-clamp-2">{{book.title}}</h3>
+          <p class="text-sm text-gray-600 mb-1">{{book.author}}</p>
+          <p class="text-xs text-gray-500 mb-3">
+            <span *ngIf="book.publicationYear">{{book.publicationYear}}</span>
+            <span *ngIf="book.pageCount"> • {{book.pageCount}} pages</span>
+          </p>
+          <button mat-raised-button color="primary" class="w-full" (click)="addToLibrary(book)">
+            <mat-icon>add</mat-icon>
+            Add to Library
+          </button>
+        </div>
+      </div>
+
+      <!-- Load More Button -->
+      <div class="text-center mt-6" *ngIf="canLoadMore">
+        <button mat-raised-button (click)="loadMore()" [disabled]="isLoading">
+          <mat-icon *ngIf="!isLoading">expand_more</mat-icon>
+          {{ isLoading ? 'Loading...' : 'Load More' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
