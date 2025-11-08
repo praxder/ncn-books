@@ -1,1 +1,239 @@
-<p>detail works!</p>
+<div class="container mx-auto p-4 max-w-4xl">
+  <!-- Loading -->
+  <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+
+  <!-- Book Details -->
+  <div *ngIf="!isLoading && book && entry">
+    <!-- Back Button -->
+    <button mat-button (click)="goBack()" class="mb-4">
+      <mat-icon>arrow_back</mat-icon>
+      Back to Library
+    </button>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Left Column: Cover & Actions -->
+      <div class="md:col-span-1">
+        <mat-card>
+          <img
+            [src]="book.coverImageUrl || 'assets/placeholder-book.png'"
+            [alt]="book.title"
+            class="w-full h-auto rounded"
+          >
+          <mat-card-content class="mt-4">
+            <!-- Status Selector -->
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Reading Status</mat-label>
+              <mat-select [value]="entry.status" (selectionChange)="updateStatus($event.value)">
+                <mat-option *ngFor="let status of statuses" [value]="status">
+                  {{status}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-chip class="w-full justify-center mb-4" [color]="getStatusColor(entry.status)">
+              {{entry.status}}
+            </mat-chip>
+
+            <!-- Dates -->
+            <div class="text-sm space-y-2 mb-4">
+              <div *ngIf="entry.startedDate">
+                <strong>Started:</strong> {{entry.startedDate | date:'mediumDate'}}
+              </div>
+              <div *ngIf="entry.finishedDate">
+                <strong>Finished:</strong> {{entry.finishedDate | date:'mediumDate'}}
+              </div>
+              <div>
+                <strong>Last Updated:</strong> {{entry.lastUpdated | date:'mediumDate'}}
+              </div>
+            </div>
+
+            <!-- Delete Button -->
+            <button mat-stroked-button color="warn" class="w-full" (click)="deleteBook()">
+              <mat-icon>delete</mat-icon>
+              Delete Book
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Right Column: Book Info & Notes -->
+      <div class="md:col-span-2 space-y-6">
+        <!-- Book Information -->
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>{{book.title}}</mat-card-title>
+            <mat-card-subtitle>by {{book.author}}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content class="mt-4">
+            <!-- Metadata -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div *ngIf="book.publicationYear">
+                <strong class="text-gray-600">Published:</strong>
+                <p>{{book.publicationYear}}</p>
+              </div>
+              <div *ngIf="book.pageCount">
+                <strong class="text-gray-600">Pages:</strong>
+                <p>{{book.pageCount}}</p>
+              </div>
+              <div *ngIf="book.isbn">
+                <strong class="text-gray-600">ISBN:</strong>
+                <p class="text-sm">{{book.isbn}}</p>
+              </div>
+              <div>
+                <strong class="text-gray-600">Added:</strong>
+                <p>{{book.addedAt | date:'mediumDate'}}</p>
+              </div>
+            </div>
+
+            <!-- Dimensions -->
+            <div *ngIf="book.dimensions" class="mb-4">
+              <strong class="text-gray-600">Dimensions:</strong>
+              <p class="text-sm">
+                <span *ngIf="book.dimensions.height">H: {{book.dimensions.height}} cm</span>
+                <span *ngIf="book.dimensions.width"> × W: {{book.dimensions.width}} cm</span>
+                <span *ngIf="book.dimensions.thickness"> × T: {{book.dimensions.thickness}} cm</span>
+              </p>
+            </div>
+
+            <!-- Description -->
+            <div *ngIf="book.description">
+              <strong class="text-gray-600">Description:</strong>
+              <p class="text-sm mt-2">{{book.description}}</p>
+            </div>
+
+            <!-- Source -->
+            <div class="mt-4 text-xs text-gray-500">
+              <mat-icon class="text-xs align-middle">info</mat-icon>
+              Source: {{book.source === 'google-books' ? 'Google Books' : book.source === 'open-library' ? 'Open Library' : 'Manual Entry'}}
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Notes Section -->
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Notes</mat-card-title>
+            <button
+              *ngIf="!isAddingNote && notes.length > 0"
+              mat-icon-button
+              color="primary"
+              (click)="showAddNoteForm()"
+              aria-label="Add note">
+              <mat-icon>add</mat-icon>
+            </button>
+          </mat-card-header>
+          <mat-card-content class="mt-4">
+            <!-- Add Note Form -->
+            <div *ngIf="isAddingNote" class="mb-6 p-4 border border-gray-300 rounded">
+              <mat-form-field appearance="outline" class="w-full">
+                <mat-label>New Note</mat-label>
+                <textarea
+                  matInput
+                  [formControl]="newNoteControl"
+                  rows="4"
+                  placeholder="Write your thoughts about this book..."
+                  maxlength="10000">
+                </textarea>
+                <mat-hint align="end">{{newNoteControl.value?.length || 0}} / 10,000</mat-hint>
+                <mat-error *ngIf="newNoteControl.hasError('required')">
+                  Note content is required
+                </mat-error>
+                <mat-error *ngIf="newNoteControl.hasError('maxlength')">
+                  Note cannot exceed 10,000 characters
+                </mat-error>
+              </mat-form-field>
+              <div class="flex gap-2">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="addNote()"
+                  [disabled]="!newNoteControl.valid">
+                  Save Note
+                </button>
+                <button mat-button (click)="cancelAddNote()">
+                  Cancel
+                </button>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="!isAddingNote && notes.length === 0" class="text-center py-8 text-gray-500">
+              <mat-icon class="text-4xl mb-2">note_add</mat-icon>
+              <p>No notes yet</p>
+              <button mat-raised-button color="primary" class="mt-2" (click)="showAddNoteForm()">
+                <mat-icon>add</mat-icon>
+                Add First Note
+              </button>
+            </div>
+
+            <!-- Notes List -->
+            <div *ngIf="notes.length > 0" class="space-y-4">
+              <div *ngFor="let note of notes" class="border-l-4 border-blue-500 pl-4 py-2">
+                <!-- View Mode -->
+                <div *ngIf="editingNoteId !== note.id">
+                  <p class="text-sm whitespace-pre-wrap">{{note.content}}</p>
+                  <div class="flex items-center justify-between mt-2">
+                    <p class="text-xs text-gray-500">
+                      {{note.createdAt | date:'short'}}
+                      <span *ngIf="note.updatedAt.getTime() !== note.createdAt.getTime()">
+                        • Edited {{note.updatedAt | date:'short'}}
+                      </span>
+                    </p>
+                    <div class="flex gap-1">
+                      <button
+                        mat-icon-button
+                        color="primary"
+                        (click)="startEditNote(note)"
+                        aria-label="Edit note">
+                        <mat-icon class="text-sm">edit</mat-icon>
+                      </button>
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="deleteNote(note)"
+                        aria-label="Delete note">
+                        <mat-icon class="text-sm">delete</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Edit Mode -->
+                <div *ngIf="editingNoteId === note.id">
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>Edit Note</mat-label>
+                    <textarea
+                      matInput
+                      [formControl]="editNoteControl"
+                      rows="4"
+                      maxlength="10000">
+                    </textarea>
+                    <mat-hint align="end">{{editNoteControl.value?.length || 0}} / 10,000</mat-hint>
+                    <mat-error *ngIf="editNoteControl.hasError('required')">
+                      Note content is required
+                    </mat-error>
+                    <mat-error *ngIf="editNoteControl.hasError('maxlength')">
+                      Note cannot exceed 10,000 characters
+                    </mat-error>
+                  </mat-form-field>
+                  <div class="flex gap-2 mt-2">
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      (click)="saveEditNote(note)"
+                      [disabled]="!editNoteControl.valid">
+                      Save
+                    </button>
+                    <button mat-button (click)="cancelEditNote()">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>
