@@ -11,6 +11,7 @@ import { Book } from '../../../core/models/book.model';
 import { ReadingEntry, ReadingStatus } from '../../../core/models/reading-entry.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { FilterBarComponent } from '../../../shared/components/filter-bar/filter-bar.component';
+import { SortSelectorComponent, SortOption } from '../../../shared/components/sort-selector/sort-selector.component';
 
 interface BookWithEntry {
   book: Book;
@@ -27,7 +28,8 @@ interface BookWithEntry {
     MatCardModule,
     MatChipsModule,
     LoadingSpinnerComponent,
-    FilterBarComponent
+    FilterBarComponent,
+    SortSelectorComponent
   ],
   templateUrl: './library.component.html',
   styleUrl: './library.component.scss'
@@ -36,6 +38,7 @@ export class LibraryComponent implements OnInit {
   allBooks: BookWithEntry[] = [];
   filteredBooks: BookWithEntry[] = [];
   selectedStatuses: ReadingStatus[] = [];
+  selectedSort: SortOption = 'recently-updated';
   isLoading = true;
 
   constructor(
@@ -45,21 +48,28 @@ export class LibraryComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.loadFilterPreference();
+    await this.loadPreferences();
     await this.loadBooks();
   }
 
   /**
-   * Load saved filter preference
+   * Load saved preferences
    */
-  async loadFilterPreference(): Promise<void> {
+  async loadPreferences(): Promise<void> {
     try {
-      const pref = await this.storage.getPreference('library-status-filter');
-      if (pref?.value && Array.isArray(pref.value)) {
-        this.selectedStatuses = pref.value;
+      // Load filter preference
+      const filterPref = await this.storage.getPreference('library-status-filter');
+      if (filterPref?.value && Array.isArray(filterPref.value)) {
+        this.selectedStatuses = filterPref.value;
+      }
+
+      // Load sort preference
+      const sortPref = await this.storage.getPreference('library-sort');
+      if (sortPref?.value && typeof sortPref.value === 'string') {
+        this.selectedSort = sortPref.value as SortOption;
       }
     } catch (error) {
-      console.error('Error loading filter preference:', error);
+      console.error('Error loading preferences:', error);
     }
   }
 
@@ -81,15 +91,41 @@ export class LibraryComponent implements OnInit {
   }
 
   /**
-   * Apply status filters
+   * Apply status filters and sorting
    */
   applyFilters(): void {
-    if (this.selectedStatuses.length === 0) {
-      this.filteredBooks = this.allBooks;
-    } else {
-      this.filteredBooks = this.allBooks.filter(item =>
+    // Filter
+    let books = this.allBooks;
+    if (this.selectedStatuses.length > 0) {
+      books = books.filter(item =>
         this.selectedStatuses.includes(item.entry.status)
       );
+    }
+
+    // Sort
+    this.filteredBooks = this.sortBooks(books, this.selectedSort);
+  }
+
+  /**
+   * Sort books based on selected option
+   */
+  sortBooks(books: BookWithEntry[], sortOption: SortOption): BookWithEntry[] {
+    const sorted = [...books];
+
+    switch (sortOption) {
+      case 'title-asc':
+        return sorted.sort((a, b) =>
+          a.book.title.localeCompare(b.book.title)
+        );
+      case 'author-asc':
+        return sorted.sort((a, b) =>
+          a.book.author.localeCompare(b.book.author)
+        );
+      case 'recently-updated':
+      default:
+        return sorted.sort((a, b) =>
+          b.entry.lastUpdated.getTime() - a.entry.lastUpdated.getTime()
+        );
     }
   }
 
@@ -105,6 +141,21 @@ export class LibraryComponent implements OnInit {
       await this.storage.setPreference('library-status-filter', statuses);
     } catch (error) {
       console.error('Error saving filter preference:', error);
+    }
+  }
+
+  /**
+   * Handle sort change
+   */
+  async onSortChange(sortOption: SortOption): Promise<void> {
+    this.selectedSort = sortOption;
+    this.applyFilters();
+
+    // Save preference
+    try {
+      await this.storage.setPreference('library-sort', sortOption);
+    } catch (error) {
+      console.error('Error saving sort preference:', error);
     }
   }
 

@@ -10,12 +10,18 @@
   <!-- Loading -->
   <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
 
-  <!-- Filter Bar -->
-  <app-filter-bar
-    *ngIf="!isLoading && allBooks.length > 0"
-    [selectedStatuses]="selectedStatuses"
-    (statusesChanged)="onStatusFilterChange($event)">
-  </app-filter-bar>
+  <!-- Filter and Sort Controls -->
+  <div *ngIf="!isLoading && allBooks.length > 0" class="space-y-4">
+    <app-filter-bar
+      [selectedStatuses]="selectedStatuses"
+      (statusesChanged)="onStatusFilterChange($event)">
+    </app-filter-bar>
+
+    <app-sort-selector
+      [selectedSort]="selectedSort"
+      (sortChanged)="onSortChange($event)">
+    </app-sort-selector>
+  </div>
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && allBooks.length === 0" class="text-center py-16">
