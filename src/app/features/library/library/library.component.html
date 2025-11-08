@@ -10,8 +10,15 @@
   <!-- Loading -->
   <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
 
+  <!-- Filter Bar -->
+  <app-filter-bar
+    *ngIf="!isLoading && allBooks.length > 0"
+    [selectedStatuses]="selectedStatuses"
+    (statusesChanged)="onStatusFilterChange($event)">
+  </app-filter-bar>
+
   <!-- Empty State -->
-  <div *ngIf="!isLoading && books.length === 0" class="text-center py-16">
+  <div *ngIf="!isLoading && allBooks.length === 0" class="text-center py-16">
     <mat-icon class="text-8xl text-gray-300 mb-4">library_books</mat-icon>
     <h2 class="text-2xl font-semibold mb-2">Your library is empty</h2>
     <p class="text-gray-600 mb-6">Start building your reading collection</p>
@@ -21,12 +28,23 @@
     </button>
   </div>
 
+  <!-- No Results After Filtering -->
+  <div *ngIf="!isLoading && allBooks.length > 0 && filteredBooks.length === 0" class="text-center py-16">
+    <mat-icon class="text-6xl text-gray-400 mb-4">filter_alt_off</mat-icon>
+    <h2 class="text-xl font-semibold mb-2">No books match your filters</h2>
+    <p class="text-gray-600">Try adjusting your status filters</p>
+  </div>
+
   <!-- Books Grid -->
-  <div *ngIf="!isLoading && books.length > 0">
-    <p class="text-gray-600 mb-4">{{books.length}} book{{books.length !== 1 ? 's' : ''}} in your library</p>
+  <div *ngIf="!isLoading && filteredBooks.length > 0">
+    <p class="text-gray-600 mb-4">
+      {{filteredBooks.length}} book{{filteredBooks.length !== 1 ? 's' : ''}}
+      <span *ngIf="selectedStatuses.length > 0"> matching your filters</span>
+      <span *ngIf="selectedStatuses.length === 0"> in your library</span>
+    </p>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-      <mat-card *ngFor="let item of books" class="cursor-pointer hover:shadow-xl transition-shadow"
+      <mat-card *ngFor="let item of filteredBooks" class="cursor-pointer hover:shadow-xl transition-shadow"
                 (click)="viewBookDetail(item.book.isbn)">
         <img
           mat-card-image
