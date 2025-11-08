@@ -8,23 +8,23 @@ export const routes: Routes = [
   },
   {
     path: 'library',
-    loadComponent: () => import('./features/library/library.component').then(m => m.LibraryComponent)
+    loadComponent: () => import('./features/library/library/library.component').then(m => m.LibraryComponent)
   },
   {
     path: 'search',
-    loadComponent: () => import('./features/book-search/search.component').then(m => m.SearchComponent)
+    loadComponent: () => import('./features/book-search/search/search.component').then(m => m.SearchComponent)
   },
   {
     path: 'book/:isbn',
-    loadComponent: () => import('./features/book-detail/detail.component').then(m => m.DetailComponent)
+    loadComponent: () => import('./features/book-detail/detail/detail.component').then(m => m.DetailComponent)
   },
   {
     path: 'statistics',
-    loadComponent: () => import('./features/statistics/dashboard.component').then(m => m.DashboardComponent)
+    loadComponent: () => import('./features/statistics/dashboard/dashboard.component').then(m => m.DashboardComponent)
   },
   {
     path: 'settings',
-    loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent)
+    loadComponent: () => import('./features/settings/settings/settings.component').then(m => m.SettingsComponent)
   },
   {
     path: '**',
