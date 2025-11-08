@@ -1,1 +1,116 @@
-<p>settings works!</p>
+<div class="container mx-auto p-4 max-w-4xl">
+  <h1 class="text-3xl font-bold mb-6">Settings</h1>
+
+  <!-- Export Data -->
+  <mat-card class="mb-6">
+    <mat-card-header>
+      <mat-card-title>Export Data</mat-card-title>
+      <mat-card-subtitle>Download your library as a JSON file</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="mt-4">
+      <p class="text-gray-600 mb-4">
+        Export all your books, reading entries, notes, and preferences to a JSON file.
+        This file can be used as a backup or to transfer your data to another device.
+      </p>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="exportData()"
+        [disabled]="isExporting">
+        <mat-icon>download</mat-icon>
+        {{ isExporting ? 'Exporting...' : 'Export Data' }}
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Import Data -->
+  <mat-card class="mb-6">
+    <mat-card-header>
+      <mat-card-title>Import Data</mat-card-title>
+      <mat-card-subtitle>Restore from a JSON backup file</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="mt-4">
+      <p class="text-gray-600 mb-4">
+        Import data from a previously exported JSON file. Choose your import strategy:
+      </p>
+
+      <mat-radio-group
+        [(ngModel)]="importStrategy"
+        class="flex flex-col gap-3 mb-4">
+        <mat-radio-button value="merge">
+          <div class="ml-2">
+            <strong>Merge</strong>
+            <p class="text-sm text-gray-600">
+              Combine imported data with existing data. Conflicts will be resolved by keeping the newer version.
+            </p>
+          </div>
+        </mat-radio-button>
+        <mat-radio-button value="replace">
+          <div class="ml-2">
+            <strong>Replace</strong>
+            <p class="text-sm text-gray-600">
+              <span class="text-red-600 font-medium">Delete all existing data</span> and replace it with imported data.
+            </p>
+          </div>
+        </mat-radio-button>
+      </mat-radio-group>
+
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="triggerFileInput()"
+        [disabled]="isImporting">
+        <mat-icon>upload</mat-icon>
+        {{ isImporting ? 'Importing...' : 'Import Data' }}
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Danger Zone -->
+  <mat-card class="border-2 border-red-500">
+    <mat-card-header>
+      <mat-card-title class="text-red-600">Danger Zone</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="mt-4">
+      <div class="bg-red-50 p-4 rounded mb-4">
+        <div class="flex items-start gap-2">
+          <mat-icon class="text-red-600 mt-1">warning</mat-icon>
+          <div>
+            <p class="font-medium text-red-900 mb-1">Clear All Data</p>
+            <p class="text-sm text-red-800">
+              This will permanently delete all books, reading entries, notes, and preferences.
+              This action cannot be undone!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <button
+        mat-raised-button
+        color="warn"
+        (click)="clearAllData()">
+        <mat-icon>delete_forever</mat-icon>
+        Clear All Data
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- About -->
+  <mat-card class="mt-6">
+    <mat-card-header>
+      <mat-card-title>About</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="mt-4">
+      <p class="text-gray-600 mb-2">
+        <strong>NCN Books Reading Log</strong>
+      </p>
+      <p class="text-sm text-gray-600 mb-2">
+        Version 1.0
+      </p>
+      <p class="text-sm text-gray-600">
+        A personal reading tracker for managing your book collection and reading progress.
+        All data is stored locally in your browser using IndexedDB.
+      </p>
+    </mat-card-content>
+  </mat-card>
+</div>

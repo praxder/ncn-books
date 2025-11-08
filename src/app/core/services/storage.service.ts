@@ -188,6 +188,13 @@ export class StorageService {
     await this.db.notes.delete(id);
   }
 
+  /**
+   * Get all notes
+   */
+  async getAllNotes(): Promise<Note[]> {
+    return await this.db.notes.toArray();
+  }
+
   // ============================================================
   // USER PREFERENCE OPERATIONS
   // ============================================================
@@ -218,6 +225,13 @@ export class StorageService {
     await this.db.preferences.delete(key);
   }
 
+  /**
+   * Get all preferences
+   */
+  async getAllPreferences(): Promise<UserPreference[]> {
+    return await this.db.preferences.toArray();
+  }
+
   // ============================================================
   // UTILITY OPERATIONS
   // ============================================================
@@ -232,6 +246,31 @@ export class StorageService {
       await this.db.notes.clear();
       await this.db.preferences.clear();
     });
+  }
+
+  /**
+   * Clear all books and their associated reading entries
+   */
+  async clearAllBooks(): Promise<void> {
+    await this.db.transaction('rw', [this.db.books, this.db.readingEntries, this.db.notes], async () => {
+      await this.db.books.clear();
+      await this.db.readingEntries.clear();
+      await this.db.notes.clear();
+    });
+  }
+
+  /**
+   * Clear all notes
+   */
+  async clearAllNotes(): Promise<void> {
+    await this.db.notes.clear();
+  }
+
+  /**
+   * Clear all preferences
+   */
+  async clearAllPreferences(): Promise<void> {
+    await this.db.preferences.clear();
   }
 
   /**
